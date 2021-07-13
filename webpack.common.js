@@ -4,13 +4,13 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const WorkboxPlugin = require('workbox-webpack-plugin');
 
 module.exports = {
-  entry: './src/index.ts',
+  entry: './src/index.js',
   module: {
     rules: [
       {
-        test: /\.ts$/,
-        use: 'ts-loader',
-        exclude: /node_modules/
+        test: /\.(js|jsx)$/,
+        exclude: /node_modules/,
+        use: ["babel-loader"],
       },
       {
         test: /\.html$/,
@@ -38,7 +38,7 @@ module.exports = {
     })
   ],
   resolve: {
-    extensions: [ '.ts', '.js' ]
+    extensions: [".tsx", ".ts", ".js"],
   },
   output: {
     filename: '[name].[contenthash].js',
