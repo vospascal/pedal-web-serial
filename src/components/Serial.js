@@ -92,10 +92,12 @@ const Serial = () => {
     }
 
     const write = async (msg) => {
+        console.log(writer, 'writer')
         // writer = port.writable.getWriter();
         // const data = new Uint8Array([116, 114, 117, 101, 10]); // "true\n"
         // await writer.write(data);
         // writer.releaseLock();
+
         if (!writer) {
             const textEncoder = new TextEncoderStream();
             let tempWritableStreamClosed = textEncoder.readable.pipeTo(port.writable);
@@ -149,7 +151,7 @@ const Serial = () => {
         <button onClick={read}>read</button>
         <button onClick={connect}>connect</button>
         <button onClick={disconnect}>disconnect</button>
-        <button onClick={() => write("getMap")}>write getMap</button>
+        <button onClick={() => write("GetMap")}>write getMap</button>
         <hr />
         {lines.map((line) => <pre>{JSON.stringify(line, null, 2)}</pre>)}
     </div>);
