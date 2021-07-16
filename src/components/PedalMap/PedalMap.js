@@ -79,10 +79,18 @@ const PedalMap = ({type}) => {
     const {stream, connected} = useContext(WebSerialContext);
     const [progress, setProgress] = useState([])
     const [list, setList] = useState([])
+    const [visible, setVisible] = useState(false)
+
+    useEffect(async ()=>{
+        setVisible(true);
+        return () => {
+            setVisible(false);
+        }
+    });
 
     useEffect(async ()=>{
         let getStream
-        if(connected){
+        if(connected && visible){
             getStream = await stream();
             getStream
                 .pipe(sample(interval(50)))
@@ -100,13 +108,10 @@ const PedalMap = ({type}) => {
                     },
                 })
         }
-        return () => {
-            // cleanup
-            if(getStream) {
-                getStream.unsubscribe();
-            }
+        if(!visible && getStream){
+            getStream.unsubscribe();
         }
-    }, [connected])
+    }, [connected, visible])
 
     useEffect(() => {
         if (chartContainer && chartContainer.current) {
