@@ -1,11 +1,11 @@
 import React, {useEffect, useState} from "react";
 import pedalMapFilter from "../pedalMap";
-import cleanString from "../cleanString";
-import pedalInput from "../pedalInput";
-import pedalCalibration from "../pedalCalibration";
-import pedalInverted from "../pedalInverted";
-import pedalSmooth from "../pedalSmooth";
-import pedalBits from "../pedalBits";
+import cleanString from "../Services/Filters/cleanString";
+import pedalInput from "../Services/Filters/pedalInput";
+import pedalCalibrationFilter from "../Services/Filters/pedalCalibration";
+import pedalInvertedFilter from "../Services/Filters/pedalInverted";
+import pedalSmoothFilter from "../Services/Filters/pedalSmooth";
+import pedalBitsFilter from "../Services/Filters/pedalBits";
 import pedalTimeline from "../pedalTimeline";
 
 class LineBreakTransformer {
@@ -182,10 +182,10 @@ const Serial = () => {
                 const cleanStr = cleanString(value)
                 // pedalInput(cleanStr);
                 pedalMapFilter(cleanStr);
-                pedalCalibration(cleanStr);
-                pedalInverted(cleanStr);
-                pedalSmooth(cleanStr);
-                pedalBits(cleanStr);
+                pedalCalibrationFilter(cleanStr);
+                pedalInvertedFilter(cleanStr);
+                pedalSmoothFilter(cleanStr);
+                pedalBitsFilter(cleanStr);
                 setLines(lines => {
                     if (lines.length > 100) {
                         return [cleanStr, ...lines].slice(0, -1)

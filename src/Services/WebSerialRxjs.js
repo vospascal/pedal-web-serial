@@ -1,4 +1,4 @@
-import {interval, Subject, from, iif}  from 'rxjs';
+import {interval, Subject, from}  from 'rxjs';
 import {map, takeUntil, concatMap, sample, switchMap, filter} from 'rxjs/operators';
 
 class LineBreakTransformer {
@@ -40,7 +40,8 @@ class WebSerialRxjs {
         });
 
         const baudRate = 115200; // ESP32 Baud Rate
-        await this.port.open({baudRate});
+        const flowControl = "hardware"
+        await this.port.open({baudRate, flowControl});
     };
 
     disconnect = async () => {
@@ -132,7 +133,7 @@ class WebSerialRxjs {
         this.isConnected = true;
         this.getReaderStream();
         this.getWriterStream();
-        return await this.monitor();
+        return this.monitor();
     }
 
     disconnectHandler = async () => {
@@ -149,8 +150,7 @@ class WebSerialRxjs {
         if (!this.isConnected) {
             return;
         }
-
-        this.writer.write(msg);
+        await this.writer.write(msg + "\n");
     };
 }
 

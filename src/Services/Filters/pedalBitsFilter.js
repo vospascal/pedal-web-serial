@@ -1,4 +1,4 @@
-const pedalBits = (cleanString) => {
+const pedalBitsFilter = (cleanString) => {
     const regex = /(BITS:([\d\-\\n]+))/gm
     const matchFoundPedalBits = cleanString.match(regex);
     if (matchFoundPedalBits) {
@@ -15,10 +15,12 @@ const pedalBits = (cleanString) => {
         const brakeBits = [brakeBitRaw, brakeBitHid];
         const clutchBits = [clutchBitRaw, clutchBitHid];
 
-        console.log(throttleBits, 'throttleBits')
-        console.log(brakeBits, 'brakeBits')
-        console.log(clutchBits, 'clutchBits')
+        return {
+            throttleBits: throttleBits,
+            brakeBits: brakeBits,
+            clutchBits: clutchBits,
+        }
     }
 }
 
-export default pedalBits;
+export default pedalBitsFilter;

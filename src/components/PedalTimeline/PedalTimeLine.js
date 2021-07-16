@@ -2,7 +2,7 @@ import React, {useContext, useState, useEffect, useRef} from "react";
 import Chart from 'chart.js/auto';
 import {interval, map, sample} from "rxjs";
 
-import {WebSerialContext} from "../../WebSerialContext";
+import {WebSerialContext} from "../../Services/WebSerialContext";
 import pedalTimelineFilter from "./pedalTimelineFilter";
 
 const chartOption = {
