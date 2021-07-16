@@ -7,53 +7,28 @@ const splitPedalInputToMap = (items, toReplace) => {
     map.before = parseInt(splitItems[1]);
     map.raw = parseInt(splitItems[2]);
     map.hid = parseInt(splitItems[3]);
-
     return map;
 }
 
-const pedalMapPositionFilter = (cleanString) => {
+const pedalMapClutchPositionFilter = (cleanString) => {
     const regex = /(T:((\d+\.\\d+|\d+)+[;,])+)(B:((\d+\.\d+|\d+)+[;,])+)(C:((\d+\.\d+|\d+)+[;,])+)/gm;
     const matchFoundPedalInput = cleanString.match(regex);
 
     if (matchFoundPedalInput) {
-        // console.log(cleanString, 'cleanString');
-
         const splitPedalInput = cleanString.split(",");
         if (splitPedalInput.length > 2) {
-            const ThrottleValues = splitPedalInputToMap(splitPedalInput[0], "T:");
-            const BrakeValues = splitPedalInputToMap(splitPedalInput[1], "B:");
             const ClutchValues = splitPedalInputToMap(splitPedalInput[2], "C:");
-
             return {
-                throttle: {
-                    x: ThrottleValues.after || 0,
-                    y: ThrottleValues.before || 0,
-                    r: 3 //ticks size
-                },
-                brake: {
-                    x: BrakeValues.after || 0,
-                    y: BrakeValues.before || 0,
-                    r: 3 //ticks size
-                },
                 clutch: {
                     x: ClutchValues.after || 0,
                     y: ClutchValues.before || 0,
                     r: 3 //ticks size
                 }
             }
-
         }
     }
 
     return {
-        throttle: {
-            x: 0,
-            y:0
-        },
-        brake: {
-            x: 0,
-            y:0
-        },
         clutch: {
             x: 0,
             y:0
@@ -61,4 +36,4 @@ const pedalMapPositionFilter = (cleanString) => {
     }
 }
 
-export default pedalMapPositionFilter;
+export default pedalMapClutchPositionFilter;

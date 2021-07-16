@@ -39,7 +39,7 @@ class WebSerialRxjs {
             // filters: [filter],
         });
 
-        const baudRate = 115200; // ESP32 Baud Rate
+        const baudRate = 9600; // ESP32 Baud Rate
         const flowControl = "hardware"
         await this.port.open({baudRate, flowControl});
     };

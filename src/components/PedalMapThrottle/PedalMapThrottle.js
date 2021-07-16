@@ -3,7 +3,7 @@ import Chart from 'chart.js/auto';
 import {interval, map, sample} from "rxjs";
 
 import {WebSerialContext} from "../../Services/WebSerialContext";
-import pedalMapPositionFilter from "./pedalMapPositionFilter";
+import pedalMapThrottlePositionFilter from "./pedalMapThrottlePositionFilter";
 import VerticalProgress from "../VerticalProgress/VerticalProgress";
 import {Flex} from "../Flex";
 import {Box} from "../Box";
@@ -73,12 +73,12 @@ const chartData = {
     ]
 };
 
-const PedalMap = ({type}) => {
+const PedalMapThrottle = () => {
+    const {pedalMap}  = useContext(WebSerialContext)
     const chartContainer = useRef(null);
     const [chartInstance, setChartInstance] = useState(null);
     const {stream, connected} = useContext(WebSerialContext);
     const [progress, setProgress] = useState([])
-    const [list, setList] = useState([])
     const [visible, setVisible] = useState(false)
 
     useEffect(async ()=>{
@@ -94,14 +94,10 @@ const PedalMap = ({type}) => {
             getStream = await stream();
             getStream
                 .pipe(sample(interval(50)))
-                .pipe(map(message => pedalMapPositionFilter(message)))
+                .pipe(map(message => pedalMapThrottlePositionFilter(message)))
                 .subscribe({
                     next: (message) => {
-                        adddata({
-                            throttle: message.throttle,
-                            brake: message.brake,
-                            clutch : message.clutch
-                        })
+                        adddata({throttle: message.throttle})
                     },
                     complete: () => {
                         console.log("[readLoop] DONE");
@@ -124,22 +120,20 @@ const PedalMap = ({type}) => {
         }
     }, [chartContainer]);
 
-    function adddata({throttle, brake, clutch}){
-        // chartInstance.data.datasets[0].data[0] = throttle
-        // chartInstance.data.datasets[0].data[0] = brake
-        if(type === "throttle") {
-            chartInstance.data.datasets[0].data[0] = throttle
-            setProgress(throttle.x);
+    useEffect(() => {
+        if(connected && visible && JSON.stringify(pedalMap) !== '{}') {
+            updateMap(pedalMap);
         }
-        if(type === "brake") {
-            chartInstance.data.datasets[0].data[0] = brake
-            setProgress(brake.x);
-        }
-        if(type === "clutch") {
-            chartInstance.data.datasets[0].data[0] = clutch
-            setProgress(clutch.x);
-        }
+    }, [pedalMap, connected, visible]);
 
+    function updateMap({throttleMap}){
+        chartInstance.data.datasets[1].data = throttleMap
+        chartInstance.update();
+    }
+
+    function adddata({throttle}){
+        chartInstance.data.datasets[0].data[0] = throttle
+        setProgress(throttle.x);
         chartInstance.update();
     }
 
@@ -153,4 +147,4 @@ const PedalMap = ({type}) => {
     </Flex>)
 }
 
-export default PedalMap;
+export default PedalMapThrottle;

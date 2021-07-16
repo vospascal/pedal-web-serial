@@ -4,10 +4,12 @@ import {Flex} from "./components/Flex";
 import {Box} from "./components/Box";
 import {WebSerialContext} from "./Services/WebSerialContext";
 import PedalTimeLine from "./components/PedalTimeline/PedalTimeLine";
-import PedalMap from "./components/PedalMap/PedalMap";
 import Tab from "./components/Tabs/Tab";
 import Tabs from "./components/Tabs/Tabs";
 import Logger from "./components/Logger/Logger";
+import PedalMapClutch from "./components/PedalMapClutch/PedalMapClutch";
+import PedalMapBrake from "./components/PedalMapBrake/PedalMapBrake";
+import PedalMapThrottle from "./components/PedalMapThrottle/PedalMapThrottle";
 
 
 const App = () => {
@@ -35,15 +37,16 @@ const App = () => {
             </Flex>
             <Tabs>
                 <Tab title="pedals">
+                    <br/>
                     <Flex flexWrap="wrap" alignItems="stretch" justifyContent="stretch">
                         <Box width={["100%", "33%"]}>
-                            <PedalMap type="clutch"/>
+                            <PedalMapClutch/>
                         </Box>
                         <Box width={["100%", "33%"]}>
-                            <PedalMap type="brake"/>
+                            <PedalMapBrake/>
                         </Box>
                         <Box width={["100%", "33%"]}>
-                            <PedalMap type="throttle"/>
+                            <PedalMapThrottle/>
                         </Box>
                     </Flex>
 
