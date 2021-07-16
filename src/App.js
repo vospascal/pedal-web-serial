@@ -27,12 +27,6 @@ const App = () => {
                         disconnect()
                     }}>disconnect
                     </button>
-
-                    <button onClick={() => write('GetMap')}>GetMap</button>
-                    <button onClick={() => write('GetCali')}>GetCali</button>
-                    <button onClick={() => write('GetInverted')}>GetInverted</button>
-                    <button onClick={() => write('GetSmooth')}>GetSmooth</button>
-                    <button onClick={() => write('GetBits')}>GetBits</button>
                 </Box>
             </Flex>
             <Tabs>

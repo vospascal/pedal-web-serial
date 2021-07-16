@@ -32,6 +32,11 @@ const WebSerialContextProvider = ({children}) => {
     const [smoothMap, setSmoothMap] = useState({});
     const [bitsMap, setBitsMap] = useState({});
 
+    const findMatch = (cleanString) =>{
+        const regex = /(T:((\d+\.\\d+|\d+)+[;,])+)(B:((\d+\.\d+|\d+)+[;,])+)(C:((\d+\.\d+|\d+)+[;,])+)/gm;
+        return cleanString.match(regex);
+    }
+
     useEffect(async () => {
         let getStream;
         let once = [2,1,0];
@@ -46,21 +51,24 @@ const WebSerialContextProvider = ({children}) => {
                             once.shift(0,-1)
                             init();
                         }
-                        // console.log(message, 'WebSerialContextProvider')
-                        const pedal_map = pedalMapFilter(message)
-                        if(pedal_map) {setPedalMap(pedal_map);}
+                        //dont match normal input
+                        if(!findMatch(message)){
+                            // console.log(message, 'WebSerialContextProvider')
+                            const pedal_map = pedalMapFilter(message)
+                            if(pedal_map) {setPedalMap(pedal_map);}
 
-                        const cali_map = pedalCalibrationFilter(message);
-                        if(cali_map) {setCalibrationMap(cali_map);}
+                            const cali_map = pedalCalibrationFilter(message);
+                            if(cali_map) {setCalibrationMap(cali_map);}
 
-                        const inver_map = pedalInvertedFilter(message);
-                        if(inver_map) {setInvertedMap(inver_map);}
+                            const inver_map = pedalInvertedFilter(message);
+                            if(inver_map) {setInvertedMap(inver_map);}
 
-                        const smooth_map = pedalSmoothFilter(message);
-                        if(smooth_map) {setSmoothMap(smooth_map);}
+                            const smooth_map = pedalSmoothFilter(message);
+                            if(smooth_map) {setSmoothMap(smooth_map);}
 
-                        const bits_map = pedalBitsFilter(message);
-                        if(bits_map) {setBitsMap(bits_map);}
+                            const bits_map = pedalBitsFilter(message);
+                            if(bits_map) {setBitsMap(bits_map);}
+                        }
 
                     },
                     complete: () => {
