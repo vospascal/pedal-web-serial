@@ -11,13 +11,12 @@ const splitPedalInputToMap = (items, toReplace) => {
     return map;
 }
 
-
-const pedalInput = (cleanString) => {
+const pedalTimelineFilter = (cleanString) => {
     const regex = /(T:((\d+\.\\d+|\d+)+[;,])+)(B:((\d+\.\d+|\d+)+[;,])+)(C:((\d+\.\d+|\d+)+[;,])+)/gm;
     const matchFoundPedalInput = cleanString.match(regex);
 
     if (matchFoundPedalInput) {
-        console.log(cleanString, 'cleanString');
+        // console.log(cleanString, 'cleanString');
 
         const splitPedalInput = cleanString.split(",");
         if (splitPedalInput.length > 2) {
@@ -25,21 +24,41 @@ const pedalInput = (cleanString) => {
             const BrakeValues = splitPedalInputToMap(splitPedalInput[1], "B:");
             const ClutchValues = splitPedalInputToMap(splitPedalInput[2], "C:");
 
-            // clutchController.setClutchPosition(ClutchValues);
-            // brakeController.setBrakePosition(BrakeValues);
-            // throttleController.setThrottlePosition(ThrottleValues);
-            //
-            // calibrateController.setClutchPositionRaw(ClutchValues);
-            // calibrateController.setBrakePositionRaw(BrakeValues);
-            // calibrateController.setThrottlePositionRaw(ThrottleValues);
-            //
-            // timeController.setClutchPosition(ClutchValues);
-            // timeController.setBrakePosition(BrakeValues);
-            // timeController.setThrottlePosition(ThrottleValues);
-
-
+            const time = new Date().getTime();
+            return {
+                throttle: {
+                    x: time,
+                    y: ThrottleValues.after || 0
+                },
+                brake: {
+                    x: time,
+                    y: BrakeValues.after || 0
+                },
+                clutch: {
+                    x: time,
+                    y: ClutchValues.after || 0
+                }
+            }
         }
+    }
+
+    return {
+        throttle: {
+            x: 0,
+            y:0,
+            r: 3
+        },
+        brake: {
+            x: 0,
+            y:0,
+            r: 3
+        },
+        clutch: {
+            x: 0,
+            y:0,
+            r: 3
+        },
     }
 }
 
-export default pedalInput;
+export default pedalTimelineFilter;

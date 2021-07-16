@@ -1,17 +1,23 @@
-const pedalBits = () => {
-    const regex = "(BITS:([\\d\\-\\n]+))/g"
+const pedalBits = (cleanString) => {
+    const regex = /(BITS:([\d\-\\n]+))/gm
     const matchFoundPedalBits = cleanString.match(regex);
     if (matchFoundPedalBits) {
-        console.log(cleanString,'cleanString');
         const splitPedalBits = cleanString.replaceAll("BITS:", "").split("-");
-        // calibrateController.setBits(
-        //     Long.parseLong(splitPedalBits[0]),
-        //     Long.parseLong(splitPedalBits[1]),
-        //     Long.parseLong(splitPedalBits[2]),
-        //     Long.parseLong(splitPedalBits[3]),
-        //     Long.parseLong(splitPedalBits[4]),
-        //     Long.parseLong(splitPedalBits[5])
-        // );
+
+        const throttleBitRaw = splitPedalBits[0];
+        const throttleBitHid = splitPedalBits[1];
+        const brakeBitRaw = splitPedalBits[2];
+        const brakeBitHid = splitPedalBits[3];
+        const clutchBitRaw = splitPedalBits[4];
+        const clutchBitHid = splitPedalBits[5];
+
+        const throttleBits = [throttleBitRaw, throttleBitHid];
+        const brakeBits = [brakeBitRaw, brakeBitHid];
+        const clutchBits = [clutchBitRaw, clutchBitHid];
+
+        console.log(throttleBits, 'throttleBits')
+        console.log(brakeBits, 'brakeBits')
+        console.log(clutchBits, 'clutchBits')
     }
 }
 

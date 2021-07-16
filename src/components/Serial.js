@@ -1,4 +1,12 @@
 import React, {useEffect, useState} from "react";
+import pedalMapFilter from "../pedalMap";
+import cleanString from "../cleanString";
+import pedalInput from "../pedalInput";
+import pedalCalibration from "../pedalCalibration";
+import pedalInverted from "../pedalInverted";
+import pedalSmooth from "../pedalSmooth";
+import pedalBits from "../pedalBits";
+import pedalTimeline from "../pedalTimeline";
 
 class LineBreakTransformer {
     constructor() {
@@ -26,7 +34,11 @@ class LineBreakTransformer {
 }
 
 const Serial = () => {
+    const [timelineThrottle, setTimelineThrottle] = useState([{x: 0, y:0}]);
+    const [timelineBrake, setTimelineBrake] = useState([{x: 0, y:0}]);
+    const [timelineClutch, setTimelineClutch] = useState([{x: 0, y:0}]);
     const [lines, setLines] = useState([]);
+
     const [port, setPort] = useState();
     const [reader, setReader] = useState();
     const [readableStreamClosed, setReadableStreamClosed] = useState();
@@ -60,6 +72,8 @@ const Serial = () => {
 
     const connect = async (event) => {
         await port.open({baudRate: 115200});
+        await createWriter();
+        await createReader();
         console.log(port);
     }
 
@@ -70,7 +84,8 @@ const Serial = () => {
         try {
             // With transform streams.
             reader.cancel().catch(error => console.log(error));
-            await readableStreamClosed.catch(() => {});
+            await readableStreamClosed.catch(() => {
+            });
             console.log("await readableStreamClosed");
             writer.close();
             await writableStreamClosed;
@@ -91,13 +106,7 @@ const Serial = () => {
         console.log(tempPort);
     }
 
-    const write = async (msg) => {
-        console.log(writer, 'writer')
-        // writer = port.writable.getWriter();
-        // const data = new Uint8Array([116, 114, 117, 101, 10]); // "true\n"
-        // await writer.write(data);
-        // writer.releaseLock();
-
+    const createWriter = async () => {
         if (!writer) {
             const textEncoder = new TextEncoderStream();
             let tempWritableStreamClosed = textEncoder.readable.pipeTo(port.writable);
@@ -106,42 +115,120 @@ const Serial = () => {
             let tempWriter = textEncoder.writable.getWriter();
             setWriter(tempWriter);
         }
+    }
+
+    const createReader = async () => {
+        if (!reader) {
+            const textDecoder = new TextDecoderStream();
+            let tempReadableStreamClosed = port.readable.pipeTo(textDecoder.writable);
+            setReadableStreamClosed(tempReadableStreamClosed);
+            // textReader = textDecoder.readable.getReader();
+            let tempReader = textDecoder.readable
+                .pipeThrough(new TransformStream(new LineBreakTransformer()))
+                .getReader();
+            setReader(tempReader)
+        }
+    }
+
+    const writeSerial = async (msg) => {
+        // writer = port.writable.getWriter();
+        // const data = new Uint8Array([116, 114, 117, 101, 10]); // "true\n"
+        // await writer.write(data);
+        // writer.releaseLock();
+
+        // if (!writer) {
+        //     const textEncoder = new TextEncoderStream();
+        //     let tempWritableStreamClosed = textEncoder.readable.pipeTo(port.writable);
+        //     setWritableStreamClosed(tempWritableStreamClosed);
+        //
+        //     let tempWriter = textEncoder.writable.getWriter();
+        //     setWriter(tempWriter);
+        // }
+        // console.log(writer, 'writer')
+
         await writer.write(msg + "\n");
     }
 
-    const read  = async (event) => {
+    const read = async (event) => {
         // reader = port.readable.getReader();
-        const textDecoder = new TextDecoderStream();
-        let tempReadableStreamClosed = port.readable.pipeTo(textDecoder.writable);
-        setReadableStreamClosed(tempReadableStreamClosed);
-        // textReader = textDecoder.readable.getReader();
-        let tempReader = textDecoder.readable
-            .pipeThrough(new TransformStream(new LineBreakTransformer()))
-            .getReader();
+        // const textDecoder = new TextDecoderStream();
+        // let tempReadableStreamClosed = port.readable.pipeTo(textDecoder.writable);
+        // setReadableStreamClosed(tempReadableStreamClosed);
+        // // textReader = textDecoder.readable.getReader();
+        // let tempReader = textDecoder.readable
+        //     .pipeThrough(new TransformStream(new LineBreakTransformer()))
+        //     .getReader();
+        //
+        // setReader(tempReader)
 
-        setReader(tempReader)
+        // get pedal map
+        writeSerial("GetMap");
+        // get calibration map
+        writeSerial("GetCali");
+        // get inverted map
+        writeSerial("GetInverted");
+        // get smooth map
+        writeSerial("GetSmooth");
+        // get bits map
+        writeSerial("GetBits");
 
         while (true) {
-            const {value, done} = await tempReader.read();
+            const {value, done} = await reader.read();
             if (done) {
-                tempReader.releaseLock();
+                reader.releaseLock();
                 break;
             }
             if (value) {
-
+                const cleanStr = cleanString(value)
+                // pedalInput(cleanStr);
+                pedalMapFilter(cleanStr);
+                pedalCalibration(cleanStr);
+                pedalInverted(cleanStr);
+                pedalSmooth(cleanStr);
+                pedalBits(cleanStr);
                 setLines(lines => {
-                    if(lines.length > 20) {
-                        return [value, ...lines].slice(0, -1)
-                    }else {
-                        return [value, ...lines]
+                    if (lines.length > 100) {
+                        return [cleanStr, ...lines].slice(0, -1)
+                    } else {
+                        return [cleanStr, ...lines]
                     }
-                })
+                });
+
+
+                const {throttle, brake, clutch} = pedalTimeline(cleanStr)
+
+                if (throttle) {
+                    setTimelineThrottle(data => {
+                        if (data.length > 1) {
+                            return [throttle, ...data].slice(0, -1)
+                        }
+                        return [throttle, ...data]
+                    })
+                }
+
+                if (brake) {
+                    setTimelineBrake(data => {
+                        if (data.length > 1) {
+                            return [brake, ...data].slice(0, -1)
+                        }
+                        return [brake, ...data]
+                    })
+                }
+
+                if (clutch) {
+                    setTimelineClutch(data => {
+                        if (data.length > 1) {
+                            return [clutch, ...data].slice(0, -1)
+                        }
+                        return [clutch, ...data]
+                    })
+                }
 
             }
         }
     }
 
-    const info  = async (event) => {
+    const info = async (event) => {
         console.log(port.getInfo());
     }
 
@@ -151,9 +238,20 @@ const Serial = () => {
         <button onClick={read}>read</button>
         <button onClick={connect}>connect</button>
         <button onClick={disconnect}>disconnect</button>
-        <button onClick={() => write("GetMap")}>write getMap</button>
-        <hr />
-        {lines.map((line) => <pre>{JSON.stringify(line, null, 2)}</pre>)}
+        <button onClick={() => writeSerial("GetMap")}>write GetMap</button>
+        <button onClick={() => writeSerial("GetCali")}>write GetCali</button>
+        <button onClick={() => writeSerial("GetInverted")}>write GetInverted</button>
+        <button onClick={() => writeSerial("GetSmooth")}>write GetSmooth</button>
+        <button onClick={() => writeSerial("GetBits")}>write GetBits</button>
+        <hr/>
+        {/*<PedalCharts throttle={timelineThrottle} brake={timelineBrake} clutch={timelineClutch}/>*/}
+        <pre>
+            {JSON.stringify(timelineThrottle, null, 2)}
+            {JSON.stringify(timelineBrake, null, 2)}
+            {JSON.stringify(timelineClutch, null, 2)}
+        </pre>
+        {/*{lines.map((line) => <pre>{JSON.stringify(line, null, 2)}</pre>)}*/}
+
     </div>);
 
 };

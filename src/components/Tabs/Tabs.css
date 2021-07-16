@@ -1,0 +1,82 @@
+.Tabs {
+    /*position: relative;*/
+    overflow: hidden;
+}
+
+.Tabs__list {
+    display: flex;
+    justify-content: space-between;
+    padding: 0;
+    margin: 0;
+}
+
+
+.Tabs.sub .Tabs__item{
+    /*background-color: rgb(88, 98, 115);*/
+    background-color: #c0c0c0;
+    border-top: 3px solid transparent;
+    border-bottom: 1px solid #f2f2f2;
+    border-left: 1px solid #f2f2f2;
+    border-right: 1px solid #f2f2f2;
+}
+
+.Tabs.sub .Tabs__item--selected{
+    border-top-color: #50a9f5;
+    border-bottom: 1px solid transparent;
+    cursor: default;
+    background-color: #fff;
+}
+
+.Tabs__item {
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-grow: 1;
+    padding: 5px;
+    list-style: none;
+    cursor: pointer;
+    user-select: none;
+    transition: border-color 0.35s;
+    border-top: 3px solid transparent;
+    border-bottom: 1px solid rgb(192, 192, 192);
+    border-left: 1px solid rgb(192, 192, 192);
+    border-right: 1px solid rgb(192, 192, 192);
+
+}
+
+.Tabs__item--selected {
+    border-top-color: #50a9f5;
+    border-bottom: 1px solid transparent;
+    cursor: default;
+    background-color: #fff;
+}
+
+.Tabs__item:not(.Tabs__item--selected):hover {
+    border-top-color: #3367D6;
+    transition-duration: 0.175s;
+}
+
+
+
+/*.Tabs__content,*/
+.Tabs .Tabs__content{
+    padding-bottom: 30px;
+}
+
+.Tabs.sub .Tabs__content{
+    box-sizing: border-box;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    height: -webkit-fill-available;
+    /*padding-bottom: 50px;*/
+}
+
+.Tabs__content p {
+    margin-top: 0;
+    line-height: 1.5;
+}
+
+.scroll{
+    padding: 10px;
+}
