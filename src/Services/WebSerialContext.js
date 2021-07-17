@@ -22,6 +22,8 @@ const init = () => {
     serialrxjs.writeHandler("GetSmooth");
     // get bits map
     serialrxjs.writeHandler("GetBits");
+
+    console.log('init')
 }
 
 const WebSerialContextProvider = ({children}) => {
@@ -32,9 +34,9 @@ const WebSerialContextProvider = ({children}) => {
     const [smoothMap, setSmoothMap] = useState({});
     const [bitsMap, setBitsMap] = useState({});
 
-    const findMatch = (cleanString) =>{
+    var findMatch = (cleanString) =>{
         const regex = /(T:((\d+\.\\d+|\d+)+[;,])+)(B:((\d+\.\d+|\d+)+[;,])+)(C:((\d+\.\d+|\d+)+[;,])+)/gm;
-        return cleanString.match(regex);
+        return !!cleanString.match(regex);
     }
 
     useEffect(async () => {
@@ -47,12 +49,10 @@ const WebSerialContextProvider = ({children}) => {
                 .pipe(map(value => cleanString(value)))
                 .subscribe({
                     next: (message) => {
-                        if(once.length > 0){
-                            once.shift(0,-1)
-                            init();
-                        }
+
                         //dont match normal input
                         if(!findMatch(message)){
+                            console.log(message)
                             // console.log(message, 'WebSerialContextProvider')
                             const pedal_map = pedalMapFilter(message)
                             if(pedal_map) {setPedalMap(pedal_map);}
@@ -68,6 +68,10 @@ const WebSerialContextProvider = ({children}) => {
 
                             const bits_map = pedalBitsFilter(message);
                             if(bits_map) {setBitsMap(bits_map);}
+                        }
+                        if(once.length > 0){
+                            once.shift(0,-1)
+                            init();
                         }
 
                     },
